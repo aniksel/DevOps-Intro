@@ -3,8 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - 'app/**'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'app/**'
+      - '.github/workflows/ci.yml'
 
 permissions:
   contents: read
@@ -13,11 +19,15 @@ jobs:
   vet:
     name: vet
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.23', '1.24']
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16  # v6.5.0
         with:
-          go-version: '1.24'
+          go-version: ${{ matrix.go }}
       - name: go vet
         working-directory: app
         run: go vet ./...
@@ -25,11 +35,15 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.23', '1.24']
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16  # v6.5.0
         with:
-          go-version: '1.24'
+          go-version: ${{ matrix.go }}
       - name: go test
         working-directory: app
         run: go test -race -count=1 ./...
@@ -47,3 +61,15 @@ jobs:
         with:
           version: v2.5.0
           working-directory: app
+
+  # Single aggregated gate: branch protection requires only this check, so the
+  # matrix can grow or shrink without ever touching the protection settings.
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [vet, test, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: verify all upstream jobs succeeded
+        run: |
+          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "false"
