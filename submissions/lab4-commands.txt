@@ -1,0 +1,33 @@
+=== 1. what is listening on :8080  (macOS lsof; Linux equivalent: ss -tlnp) ===
+COMMAND     PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+quicknote 49068 annaksel    5u  IPv6 0xa3ffd7ba3db1f831      0t0  TCP *:8080 (LISTEN)
+
+=== 2. routing table  (macOS netstat -rn; Linux equivalent: ip route show) ===
+Routing tables
+
+Internet:
+Destination        Gateway            Flags               Netif Expire
+default            link#21            UCSg                utun6
+default            10.240.16.1        UGScIg                en0
+1.1.1.1            link#21            UHWIig              utun6
+2.19.126.199       link#21            UHWIig              utun6
+2.19.126.201       link#21            UHWIig              utun6
+2.19.126.225       link#21            UHWIig              utun6
+2.21.20.151        link#21            UHWIig              utun6
+5.255.255.77       link#21            UHWIig              utun6
+10                 10.240.16.1        UGSc                  en0
+10.240.16/21       link#11            UCS                   en0      !
+10.240.16.1/32     link#11            UCS                   en0      !
+
+=== 3. reachability  (mtr) ===
+Start: 2026-09-14T16:43:28+0300
+HOST: MacBook-Air-Anna.local Loss%   Snt   Last   Avg  Best  Wrst StDev
+  1.|-- localhost               0.0%     5    0.2   0.2   0.2   0.2   0.0
+
+=== 4. DNS resolution  (dig +short example.com @1.1.1.1) ===
+104.20.23.154
+172.66.147.243
+
+=== 5. service logs  (no systemd on macOS; unified log queried instead of journalctl) ===
+Timestamp               Ty Process[PID:TID]
+(no entries: QuickNotes runs in the foreground, not as a managed service)

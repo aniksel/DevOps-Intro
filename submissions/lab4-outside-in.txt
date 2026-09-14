@@ -1,0 +1,27 @@
+=== step 1: is the process running? ===
+  501 49052 48964   0  4:35PM ttys032    0:00.33 go run .
+  501 49068 49052   0  4:35PM ttys032    0:00.01 /var/folders/7j/w0kq7z3n2nn32g04q1ggkg440000gn/T/go-build425699405/b001/exe/quicknotes
+
+=== step 2: is anything listening on :8080?  (macOS lsof; Linux: ss -tlnp) ===
+COMMAND     PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+quicknote 49068 annaksel    5u  IPv6 0xa3ffd7ba3db1f831      0t0  TCP *:8080 (LISTEN)
+
+=== step 3: does it answer over HTTP? ===
+200
+
+=== step 4: is a firewall blocking?  (macOS pfctl; Linux: iptables -L / nft list ruleset) ===
+No ALTQ support in kernel
+ALTQ related functions disabled
+scrub-anchor "com.apple/*" all fragment reassemble
+anchor "com.apple/*" all
+
+=== step 5: does the name resolve? ===
+dig +short localhost:
+;; connection timed out; no servers could be reached
+dscacheutil (macOS resolver, reads /etc/hosts):
+name: localhost
+ipv6_address: ::1
+
+name: localhost
+ip_address: 127.0.0.1
+
