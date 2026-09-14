@@ -146,3 +146,88 @@ A second QuickNotes instance was started while the first still held `:8080`, and
 What is systemic here is not that someone started a process twice. Port ownership is invisible state: the only way to know that `:8080` is taken is to ask the kernel, and nothing in `go run .` asks first. The failure is also silent from the outside. Every step of the outside-in chain passed, because those checks describe the port, not the process that intended to own it. Monitoring watching `/health` would have shown green while a deploy had in fact failed, and the service's own first log line claimed success before the bind was attempted.
 
 Tooling that would prevent it: a process supervisor such as systemd, launchd or a container runtime that owns the port and refuses to start a duplicate unit; a deploy that stops the old instance before starting the new one; and a readiness check tied to the identity of the new process rather than to the port, so that "something answers" is never mistaken for "my deploy succeeded".
+
+---
+
+## Bonus Task: Decode the TLS Handshake
+
+### B.1: HTTPS in front of QuickNotes
+
+Caddy was installed with Homebrew and run in the foreground with a local config, since macOS has no systemd:
+
+```
+localhost:8443 {
+  reverse_proxy localhost:8080
+}
+```
+
+```bash
+caddy run --config /tmp/Caddyfile --adapter caddyfile
+```
+
+Caddy issued a certificate for `localhost` from its own internal CA and installed that CA's root into the macOS keychain, so the chain verifies locally.
+
+### B.2: Capture
+
+```bash
+sudo tcpdump -i lo0 -nn -s 0 -w /tmp/lab4-tls.pcap 'tcp port 8443'
+curl -vk https://localhost:8443/health
+```
+
+35 packets. What curl reported (full output in [`lab4-tls-curl.txt`](lab4-tls-curl.txt)):
+
+```
+* ALPN: curl offers h2,http/1.1
+* (304) (OUT), TLS handshake, Client hello (1):
+* (304) (IN), TLS handshake, Server hello (2):
+* (304) (IN), TLS handshake, Certificate (11):
+* (304) (IN), TLS handshake, CERT verify (15):
+* (304) (IN), TLS handshake, Finished (20):
+* (304) (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  start date: Sep 14 14:15:44 2026 GMT
+*  expire date: Sep 15 02:15:44 2026 GMT
+*  issuer: CN=Caddy Local Authority - ECC Intermediate
+*  SSL certificate verify ok.
+* using HTTP/2
+```
+
+The certificate is valid for twelve hours, which is what an internal CA meant for local development issues.
+
+### B.3: The handshake in Wireshark
+
+Filter used: `tls.handshake.type == 1 || tls.handshake.type == 2`.
+
+**ClientHello** (frame 5, 395 bytes):
+
+![ClientHello](screenshots/tls_clienthello.png)
+
+- `server_name (len=14) name=localhost`, this is SNI, and it is what lets a server holding many certificates pick the right one
+- `Cipher Suites (49 suites)` offered
+- `supported_versions (len=9) TLS 1.3, TLS 1.2, TLS 1.1, TLS 1.0`
+- `key_share (len=38) x25519`, the client guesses the key exchange group up front
+- `application_layer_protocol_negotiation`, carrying `h2` and `http/1.1`
+
+**ServerHello** (frame 7):
+
+![ServerHello](screenshots/tls_serverhello.png)
+
+- `Cipher Suite: TLS_CHACHA20_POLY1305_SHA256 (0x1303)`
+- `supported_versions (len=2) TLS 1.3`
+- `key_share (len=36) x25519`
+
+Everything after ServerHello in that frame is already `Application Data`. In TLS 1.3 the certificate, the certificate verify and the Finished message are encrypted, which is why Wireshark shows them as opaque records rather than parsed fields.
+
+**Certificate chain** (full output in [`lab4-tls-chain.txt`](lab4-tls-chain.txt)): two certificates, the leaf for `localhost` and the intermediate `Caddy Local Authority - ECC Intermediate`, with `Protocol: TLSv1.3`, `Cipher: AEAD-CHACHA20-POLY1305-SHA256` and `Verify return code: 0 (ok)`.
+
+### Which negotiation step kills TLS 1.0 and 1.1
+
+The `supported_versions` extension, and specifically the server's choice inside it.
+
+Both screenshots show a field labelled `Version: TLS 1.2 (0x0303)`, and the record layer of the ClientHello even says TLS 1.0. Neither of those is the real version. In TLS 1.3 the legacy version fields were frozen at those values on purpose, because middleboxes on the internet were dropping handshakes that carried anything newer. The actual negotiation moved into an extension.
+
+So the client here still advertises all four versions, TLS 1.3 down to 1.0, and nothing stops it. What ends the matter is the server: it answers with `supported_versions: TLS 1.3` and that single value is the negotiated version. TLS 1.0 and 1.1 die at the selection step, not at the offer. A server configured with a minimum of TLS 1.2, which is the default in Caddy and in every maintained server in 2026, simply never picks those entries, and if a client offers nothing better the handshake is aborted instead of downgraded.
+
+The cipher list makes the same point from another angle. TLS 1.3 defines its own small set of AEAD-only suites, of which `TLS_CHACHA20_POLY1305_SHA256` was chosen here. The suites that made TLS 1.0 and 1.1 unsafe, such as CBC constructions vulnerable to BEAST and Lucky 13, are not in that set at all, so choosing TLS 1.3 rules them out by construction rather than by configuration.

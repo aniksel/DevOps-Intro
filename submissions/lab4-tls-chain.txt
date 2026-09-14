@@ -1,0 +1,62 @@
+depth=1 CN = Caddy Local Authority - ECC Intermediate
+verify error:num=20:unable to get local issuer certificate
+verify return:0
+CONNECTED(00000005)
+write W BLOCK
+---
+Certificate chain
+ 0 s:
+   i:/CN=Caddy Local Authority - ECC Intermediate
+-----BEGIN CERTIFICATE-----
+MIIBvTCCAWSgAwIBAgIRAIrZVDK4s1l5tOVxtZjQzmkwCgYIKoZIzj0EAwIwMzEx
+MC8GA1UEAxMoQ2FkZHkgTG9jYWwgQXV0aG9yaXR5IC0gRUNDIEludGVybWVkaWF0
+ZTAeFw0yNjA5MTQxNDE1NDRaFw0yNjA5MTUwMjE1NDRaMAAwWTATBgcqhkjOPQIB
+BggqhkjOPQMBBwNCAASP/43BpvI2RihjOMgqsQwOfceFtL3baMkt523TQ2Bu2ZwQ
+OxG9ulJRrgvYsFfuxV2glP86acHfA6swCyVjVVwQo4GLMIGIMA4GA1UdDwEB/wQE
+AwIHgDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYDVR0OBBYEFKXy
+WBra29lMsbWrdzacmx3PiSKBMB8GA1UdIwQYMBaAFJRy4oCXSLjYLH+ORtn7PetV
+KCNiMBcGA1UdEQEB/wQNMAuCCWxvY2FsaG9zdDAKBggqhkjOPQQDAgNHADBEAiBa
+4MscUDN8N4l8j5ghRjOaAHFzXtL68n11SUIQdpH/+AIgRYUORjUjy9xj47CQjJKs
+JUqQ5yPoK0FnnOgm97fP7rM=
+-----END CERTIFICATE-----
+ 1 s:/CN=Caddy Local Authority - ECC Intermediate
+   i:/CN=Caddy Local Authority - 2026 ECC Root
+-----BEGIN CERTIFICATE-----
+MIIBxzCCAW6gAwIBAgIRAO0SizCvnSDC2Gz1RHYcCQUwCgYIKoZIzj0EAwIwMDEu
+MCwGA1UEAxMlQ2FkZHkgTG9jYWwgQXV0aG9yaXR5IC0gMjAyNiBFQ0MgUm9vdDAe
+Fw0yNjA5MTQxNDE1NDRaFw0yNjA5MjExNDE1NDRaMDMxMTAvBgNVBAMTKENhZGR5
+IExvY2FsIEF1dGhvcml0eSAtIEVDQyBJbnRlcm1lZGlhdGUwWTATBgcqhkjOPQIB
+BggqhkjOPQMBBwNCAARVSQiuFnrfgRq30sNahDS7XM9fb7EBTqaoG6A5U5q3IGd4
+MwzWwdzyRDClz//RbISzGF8kMFjFNL/vC/3Z5ZqQo2YwZDAOBgNVHQ8BAf8EBAMC
+AQYwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQUlHLigJdIuNgsf45G2fs9
+61UoI2IwHwYDVR0jBBgwFoAUyTFigyOqujQqxurOvfXfnfYqEHswCgYIKoZIzj0E
+AwIDRwAwRAIgPP1cjoJ9XegPFi4UEVkkOk42wVbysQO2KX4bYwZ+2MUCICaeKLYG
+/LT1q2rOaePJeuVfM44UGD/4T7iJFwMc1XAf
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=
+issuer=/CN=Caddy Local Authority - ECC Intermediate
+---
+No client certificate CA names sent
+Server Temp Key: ECDH, X25519, 253 bits
+---
+SSL handshake has read 1271 bytes and written 369 bytes
+---
+New, TLSv1/SSLv3, Cipher is AEAD-CHACHA20-POLY1305-SHA256
+Server public key is 256 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : AEAD-CHACHA20-POLY1305-SHA256
+    Session-ID: 
+    Session-ID-ctx: 
+    Master-Key: 
+    Start Time: 1789395607
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+---
+poll error
