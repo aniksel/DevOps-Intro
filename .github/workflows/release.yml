@@ -47,6 +47,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            # {{raw}} keeps the tag exactly as it was pushed, so v0.1.0 stays
+            # v0.1.0. The deploy step below asks Render for that same name, and
+            # {{version}} alone would have published 0.1.0 and missed it.
+            type=semver,pattern={{raw}}
             type=semver,pattern={{version}}
             type=raw,value=latest
 
