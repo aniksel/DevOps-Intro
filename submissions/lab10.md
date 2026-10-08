@@ -180,6 +180,10 @@ next release would then build that code, and no pull request would show it.
 
 Service URL: **https://quicknotes-0-1-0.onrender.com**
 
+The service was created from image tag `0.1.0`, which is where its name and URL
+come from. It now runs `v0.1.2`, because the deploy hook moves the tag on every
+release while the service keeps its original name.
+
 Configuration: [cloud/render.md](../cloud/render.md).
 Teardown: [cloud/teardown.md](../cloud/teardown.md).
 Measurement script: [cloud/measure.sh](../cloud/measure.sh),
@@ -257,7 +261,11 @@ human:
 ### Scale to zero
 
 Free services spin down after 15 idle minutes. Each cold sample below was taken
-after 21 minutes without a single request.
+after a gap with no requests at all. [cloud/measure.sh](../cloud/measure.sh)
+sleeps 21 minutes between samples, and the timestamps in the log show longer
+gaps than that, 36 and 34 minutes, because the laptop running the script slept
+during the waits. The service was therefore idle for longer than the threshold,
+never shorter, so all three samples are real cold starts.
 
 | Measurement | Value |
 |---|---|
@@ -278,10 +286,13 @@ A cold request is about 44 times slower than a warm one.
   warm  5: 0.427828s     warm 10: 0.281721s
 ```
 
-The first warm block in `cloud/latency.txt` was taken on a service that had been
-idle for hours, so its first request was itself a cold start. The block above
-was taken right after a wake, while the instance was certainly warm, and it is
-the one the p50 comes from.
+Two warm blocks are in `cloud/latency.txt` and only the one above counts.
+
+The script's own warm block runs first, and by then the service had been idle
+for hours, so its first request was itself a cold start of 13.9 s. The block
+above was run by hand, as a separate command appended to the same file, right
+after the third wake while the instance was certainly warm. That is where the
+p50 of 0.31 s comes from.
 
 ### What happened to the note
 
