@@ -1,0 +1,17 @@
+2026-10-08T11:26:39Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-10-08T11:26:39Z	INFO	[secret] Secret scanning is enabled
+2026-10-08T11:26:39Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-10-08T11:26:39Z	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.59/docs/scanner/secret#recommendation for faster secret detection
+2026-10-08T11:26:39Z	INFO	Number of language-specific files	num=2
+2026-10-08T11:26:39Z	INFO	[gobinary] Detecting vulnerabilities...
+trivy exit code: 0 (0 = no HIGH or CRITICAL findings)
+[
+  {
+    "Target": "healthcheck",
+    "high_or_critical": 0
+  },
+  {
+    "Target": "quicknotes",
+    "high_or_critical": 0
+  }
+]
