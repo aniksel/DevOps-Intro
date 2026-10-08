@@ -46,6 +46,10 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302  # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # The action adds its own `latest` on a semver tag. Turning that off
+          # keeps the list to exactly the three tags written below.
+          flavor: |
+            latest=false
           tags: |
             # {{raw}} keeps the tag exactly as it was pushed, so v0.1.0 stays
             # v0.1.0. The deploy step below asks Render for that same name, and
@@ -80,7 +84,11 @@ jobs:
         # succeeds for a deployment that does not use Render.
         if: env.RENDER_DEPLOY_HOOK != ''
         env:
-          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+          # Taken from the metadata action, not built by hand. A registry name
+          # has to be lowercase and github.repository is not, and Render
+          # compares the image name exactly: one capital letter and the hook
+          # answers 400 "cannot change the host, project, or image name".
+          IMAGE: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
         run: |
           set -euo pipefail
           # The hook URL already carries a ?key=..., so the image goes on with
