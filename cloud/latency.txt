@@ -1,0 +1,45 @@
+target:  https://quicknotes-0-1-0.onrender.com
+started: 2026-10-08T20:59:14Z
+
+== warm, 5 consecutive requests to /health ==
+  warm 1: 13.883958s
+  warm 2: 0.384863s
+  warm 3: 0.400328s
+  warm 4: 16.513520s
+  warm 5: 0.372473s
+
+== write a note, then let the service spin down ==
+  POST /notes -> {"id":5,"title":"before spin down","body":"does this survive","created_at":"2026-10-08T20:59:50.028580853Z"}
+  present now: 1 (1 = yes, 0 = no)
+
+== idle 1260s, then cold request #1 ==
+  waking at 21:20:47Z
+  cold 1:        12.832329s
+  health:         {"notes":4,"status":"ok"}
+  note survived:  0 (1 = yes, 0 = no)
+
+== idle 1260s, then cold request #2 ==
+  waking at 21:57:31Z
+  cold 2:        13.735607s
+  health:         {"notes":4,"status":"ok"}
+  note survived:  0 (1 = yes, 0 = no)
+
+== idle 1260s, then cold request #3 ==
+  waking at 22:31:27Z
+  cold 3:        14.153117s
+  health:         {"notes":4,"status":"ok"}
+  note survived:  0 (1 = yes, 0 = no)
+
+finished: 2026-10-08T22:31:42Z
+
+== warm again, 10 consecutive requests right after the last wake ==
+  warm  1: 0.308065s
+  warm  2: 0.312072s
+  warm  3: 0.308578s
+  warm  4: 0.302817s
+  warm  5: 0.427828s
+  warm  6: 0.326101s
+  warm  7: 0.478431s
+  warm  8: 0.308757s
+  warm  9: 0.274270s
+  warm 10: 0.281721s
