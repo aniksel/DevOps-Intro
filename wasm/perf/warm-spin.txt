@@ -1,0 +1,5 @@
+Benchmark 1: curl -s http://127.0.0.1:3000/time (50 runs)
+                mean     ±       σ          min     …     max
+  Wall Time      5.1 ms  ±     0.4 ms       4.6 ms  …     6.7 ms
+  Memory         4.5 MiB ±     0.0 MiB      4.4 MiB …     4.6 MiB
+ 

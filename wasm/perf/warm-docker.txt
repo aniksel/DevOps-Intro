@@ -1,0 +1,5 @@
+Benchmark 1: curl -s http://127.0.0.1:8081/health (50 runs)
+                mean     ±       σ          min     …     max
+  Wall Time      5.8 ms  ±     0.7 ms       4.7 ms  …     8.6 ms
+  Memory         4.5 MiB ±     0.1 MiB      4.4 MiB …     4.8 MiB
+ 

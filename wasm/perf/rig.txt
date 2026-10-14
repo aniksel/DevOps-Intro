@@ -1,0 +1,7 @@
+ProductName:		macOS ProductVersion:		15.7.4 BuildVersion:		24G517 
+arm64
+Apple M4
+spin      spin 4.2.1 (fa7dc37 2026-09-30)
+docker    Docker version 29.2.1, build a5c7197
+hyperfine hyperfine 2.0.0
+go        go version go1.27.1 darwin/arm64

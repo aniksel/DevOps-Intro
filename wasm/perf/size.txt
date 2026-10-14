@@ -1,0 +1,3 @@
+main.wasm on disk        4826458 bytes (4.60 MB)
+quicknotes:lab6 on disk  15.8MB (uncompressed, docker images)
+quicknotes:lab6 content  4649758 bytes (4.43 MB, compressed layers)
